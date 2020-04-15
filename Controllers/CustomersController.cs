@@ -1,5 +1,6 @@
 ﻿using CobaMVCNetFramework.Models;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 
@@ -19,7 +20,7 @@ namespace CobaMVCNetFramework.Controllers
         // GET: Customers
         public ViewResult Index()
         {
-            var customers = _context.Customers.ToList();      
+            var customers = _context.Customers.Include(c => c.MembershipType).ToList();      
             return View(customers);
         }
         public ActionResult Details(int id)
