@@ -15,35 +15,48 @@ namespace CobaMVCNetFramework.Models
         {
             _context = new ApplicationDbContext();
         }
+        protected override void Dispose(bool disposing)
+        {
+            _context.Dispose();
+        }
         // GET: Movies
-        public ActionResult Random()
+        //public ActionResult Random()
+        //{
+        //    var movie = new Movie() { Name = "Shrek!" };
+        //    var customers = new List<Customer>
+        //    {
+        //        new Customer { Name = "John Smith" },
+        //        new Customer { Name = "Marry Williams" }
+        //    };
+        //    var viewModel = new RandomMovieViewModel()
+        //    {
+        //        Movie = movie,
+        //        Customers = customers
+        //    };
+        //    return View(viewModel);
+        //}
+        //public ActionResult Edit(int id)
+        //{
+        //    return Content("id = " + id);
+        //}
+        public ViewResult Index()
         {
-            var movie = new Movie() { Name = "Shrek!" };
-            var customers = new List<Customer>
-            {
-                new Customer { Name = "John Smith" },
-                new Customer { Name = "Marry Williams" }
-            };
-            var viewModel = new RandomMovieViewModel()
-            {
-                Movie = movie,
-                Customers = customers
-            };
-            return View(viewModel);
-        }
-        public ActionResult Edit(int id)
-        {
-            return Content("id = " + id);
-        }
-        public ActionResult Index(int? pageIndex, string sortBy)
-        {
-            var movies = _context.Customers.ToList();
+            var movies = _context.Movies.Include(c => c.Genre).ToList();
             return View(movies);
         }
         [Route("movies/released/{year:regex(\\d{4}):range(1900, 2999)}/{month:regex(\\d{2}):range(1, 12)}")]
         public ActionResult ByReleaseDate(int year, int month)
         {         
             return Content(year + "/" + month);
-        }       
+        }
+        public ActionResult Details(int id)
+        {
+            var movie = _context.Movies.Include(c => c.Genre).SingleOrDefault(c => c.Id == id);
+
+            if (movie == null)
+                return HttpNotFound();
+
+            return View(movie);
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using CobaMVCNetFramework.Models;
+using CobaMVCNetFramework.ViewModels;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -31,6 +32,16 @@ namespace CobaMVCNetFramework.Controllers
                 return HttpNotFound();
 
             return View(customer);
-        }      
+        }
+        public ActionResult New()
+        {
+            var membershipTypes = _context.MembershipTypes.ToList();
+            var viewModel = new NewCustomerViewModel
+            {
+                MembershipTypes = membershipTypes
+            };
+
+            return View(viewModel);
+        }
     }
 }
