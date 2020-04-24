@@ -19,26 +19,6 @@ namespace CobaMVCNetFramework.Models
         {
             _context.Dispose();
         }
-        // GET: Movies
-        //public ActionResult Random()
-        //{
-        //    var movie = new Movie() { Name = "Shrek!" };
-        //    var customers = new List<Customer>
-        //    {
-        //        new Customer { Name = "John Smith" },
-        //        new Customer { Name = "Marry Williams" }
-        //    };
-        //    var viewModel = new RandomMovieViewModel()
-        //    {
-        //        Movie = movie,
-        //        Customers = customers
-        //    };
-        //    return View(viewModel);
-        //}
-        //public ActionResult Edit(int id)
-        //{
-        //    return Content("id = " + id);
-        //}
         public ViewResult Index()
         {
             var movies = _context.Movies.Include(c => c.Genre).ToList();
@@ -57,6 +37,38 @@ namespace CobaMVCNetFramework.Models
                 return HttpNotFound();
 
             return View(movie);
+        }
+        public ViewResult New()
+        {
+            var genre = _context.Genres.ToList();
+            var viewModel = new MovieFormViewModel
+            {
+                Genres = genre
+            };
+
+            return View("MovieForm", viewModel);
+        }
+        [HttpPost]
+        public ActionResult Save(Movie movie)
+        {
+            if (movie.Id == 0)
+            {
+                movie.DateAdded = DateTime.Now;
+                _context.Movies.Add(movie);
+            }
+            else
+            {
+                var movieInDb = _context.Movies.Single(m => m.Id == movie.Id);
+                movieInDb.Name = movie.Name;
+                movieInDb.GenreId = movie.GenreId;                
+                movieInDb.Stock = movie.Stock;
+                movieInDb.ReleaseDate = movie.ReleaseDate;
+            }
+
+            //((System.Data.Entity.Validation.DbEntityValidationException)$exception).EntityValidationErrors (paste in watch)
+            _context.SaveChanges();
+
+            return RedirectToAction("Index", "Movies");
         }
     }
 }
