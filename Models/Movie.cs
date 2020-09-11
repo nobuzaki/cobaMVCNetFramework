@@ -24,6 +24,7 @@ namespace CobaMVCNetFramework.Models
         public DateTime DateAdded { get; set; }
 
         [Display(Name = "Number in Stock")]
+        [MaxNumberInStock]
         public int Stock { get; set; }
     }
 }

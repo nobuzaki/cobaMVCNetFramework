@@ -43,14 +43,26 @@ namespace CobaMVCNetFramework.Models
             var genre = _context.Genres.ToList();
             var viewModel = new MovieFormViewModel
             {
+                Movie = new Movie(),
                 Genres = genre
             };
 
             return View("MovieForm", viewModel);
         }
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public ActionResult Save(Movie movie)
         {
+            if (!ModelState.IsValid)
+            {
+                var viewModel = new MovieFormViewModel
+                {
+                    Movie = movie,
+                    Genres = _context.Genres.ToList()
+                };
+                return View("MovieForm", viewModel);
+            }
+
             if (movie.Id == 0)
             {
                 movie.DateAdded = DateTime.Now;
@@ -69,6 +81,20 @@ namespace CobaMVCNetFramework.Models
             _context.SaveChanges();
 
             return RedirectToAction("Index", "Movies");
+        }
+        public ActionResult Edit(int Id)
+        {
+            var movie = _context.Movies.SingleOrDefault(c => c.Id == Id);
+
+            if (movie == null)
+                return HttpNotFound();
+
+            var viewModel = new MovieFormViewModel
+            {
+                Movie = movie,
+                Genres = _context.Genres.ToList()
+            };
+            return View("MovieForm", viewModel);
         }
     }
 }
